@@ -2,6 +2,7 @@ package Server;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Random;
 import Commons.Commons;
 import DTO.Step1;
@@ -22,6 +23,7 @@ public class WorkerRunnable implements Runnable{
     protected String serverText   = null;
     private Integer b;
     private Integer secret;
+    private boolean running = true;
 
     public WorkerRunnable(Socket clientSocket, String serverText) {
         this.clientSocket = clientSocket;
@@ -50,8 +52,14 @@ public class WorkerRunnable implements Runnable{
 
             writeJson(bufOut,gson.toJson(step2B));
 
+            while(running){
+                String msg =readJson(bufIn);
+                System.out.println(msg);
+            }
 
-        } catch (IOException e) {
+        } catch(SocketException exception) {
+            System.out.println("Socket Stop, Client disconect");
+        }catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -69,7 +77,7 @@ public class WorkerRunnable implements Runnable{
         return null;
 
     }
-    public Step2A step2(BufferedReader reader){
+    public Step2A step2(BufferedReader reader) throws SocketException{
         String json = readJson(reader);
         if(json.isEmpty())
             return null;
