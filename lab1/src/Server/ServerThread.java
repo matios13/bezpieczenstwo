@@ -38,9 +38,7 @@ public class ServerThread implements Runnable {
 		System.out.println("Server Stopped.");
 	}
 
-	private synchronized boolean isStopped() {
-		return this.isStopped;
-	}
+
 
 	public synchronized void stop() {
 		this.isStopped = true;
@@ -57,6 +55,10 @@ public class ServerThread implements Runnable {
 		} catch (IOException e) {
 			throw new RuntimeException("Cannot open port 8080", e);
 		}
+	}
+
+	private synchronized boolean isStopped() {
+		return this.isStopped;
 	}
 
 }
