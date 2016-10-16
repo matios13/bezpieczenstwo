@@ -38,22 +38,20 @@ public class WorkerRunnable implements Runnable{
             OutputStream output = clientSocket.getOutputStream();
             Step1 step1=null;
             Step2A step2A =null;
-            BufferedReader bufIn = new BufferedReader( new InputStreamReader( input,"UTF-8" ) );
-            BufferedWriter bufOut = new BufferedWriter( new OutputStreamWriter( output,"UTF-8" ) );
             while(step1==null){
-                step1=step1(bufIn);
+                step1=step1(input);
             }
             Step2B step2B= new Step2B(((int)pow(step1.getG(),b))%step1.getP());
 
             while (step2A==null){
-                step2A=step2(bufIn);
+                step2A=step2(input);
             }
             Gson gson = new Gson();
 
-            writeJson(bufOut,gson.toJson(step2B));
+            writeJson(output,gson.toJson(step2B));
 
             while(running){
-                String msg =readJson(bufIn);
+                String msg =readJson(input);
                 System.out.println(msg);
             }
 
@@ -64,8 +62,8 @@ public class WorkerRunnable implements Runnable{
         }
     }
 
-    public Step1 step1(BufferedReader reader) throws IOException {
-        String json = readJson(reader);
+    public Step1 step1(InputStream input) throws IOException {
+        String json = readJson(input);
         if(json.isEmpty())
             return null;
         System.out.println("Received : "+json.toString());
@@ -77,8 +75,8 @@ public class WorkerRunnable implements Runnable{
         return null;
 
     }
-    public Step2A step2(BufferedReader reader) throws SocketException{
-        String json = readJson(reader);
+    public Step2A step2(InputStream input) throws SocketException{
+        String json = readJson(input);
         if(json.isEmpty())
             return null;
         System.out.println("Received : "+json.toString());

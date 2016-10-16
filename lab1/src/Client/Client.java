@@ -6,6 +6,7 @@ import DTO.Message;
 import DTO.Step1;
 import DTO.Step2A;
 import com.google.gson.Gson;
+import com.sun.corba.se.spi.orbutil.fsm.Input;
 
 import javax.swing.*;
 
@@ -33,32 +34,32 @@ public class Client {
       try {
          Socket skt = new Socket("localhost", 9000);
 
-         BufferedReader bufIn = new BufferedReader( new InputStreamReader( skt.getInputStream(),"UTF-8" ) );
-         BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( skt.getOutputStream(),"UTF-8" ) );
+         InputStream input = skt.getInputStream();
+         OutputStream output = skt.getOutputStream();
          Random generator = new Random();
          a=generator.nextInt(40);
-         step1(writer);
-         step2(writer,bufIn);
-         createGUI(writer);
+         step1(output);
+         step2(output,input);
+         createGUI(output);
       }
       catch(Exception e) {
          System.out.print("Whoops! It didn't work!\n");
       }
    }
-   public static void step1(BufferedWriter writer){
+   public static void step1(OutputStream output){
       Step1 step1 = new Step1(p,g);
       Gson gson = new Gson();
-      writeJson(writer,gson.toJson(step1));
+      writeJson(output,gson.toJson(step1));
    }
-   public static void step2(BufferedWriter writer, BufferedReader reader)throws SocketException{
+   public static void step2(OutputStream output, InputStream input)throws SocketException{
       Step2A step2A=new Step2A(((int)pow(p,a))%g);
       Gson gson = new Gson();
-      writeJson(writer,gson.toJson(step2A));
-      String msg = readJson(reader);
+      writeJson(output,gson.toJson(step2A));
+      String msg = readJson(input);
       System.out.println("Received : "+msg);
    }
 
-   public static void createGUI(BufferedWriter writer){
+   public static void createGUI(OutputStream output){
       //KONFIGURACJA
       JComboBox encodingComboBox = new JComboBox();
       Arrays.stream(Encoding.values()).forEach(encoding -> encodingComboBox.addItem(encoding));
@@ -75,7 +76,7 @@ public class Client {
          @Override
          public void actionPerformed(ActionEvent e) {
             Control control = new Control(((Encoding)encodingComboBox.getSelectedItem()).toString());
-            writeJson(writer,new Gson().toJson(control));
+            writeJson(output,new Gson().toJson(control));
          }
       });
 
@@ -116,7 +117,7 @@ public class Client {
          @Override
          public void actionPerformed(ActionEvent e) {
              Message message = new Message(msg.getText(),from.getText());
-             writeJson(writer,new Gson().toJson(message));
+             writeJson(output,new Gson().toJson(message));
              msg.setText("");
 
          }

@@ -90,3 +90,4 @@ fabric.properties
 lab1/.idea/
 *.iml
 *.class
+.idea/
