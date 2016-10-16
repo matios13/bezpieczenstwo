@@ -6,17 +6,17 @@ import Commons.Encoding;
  * Created by Uzytkownik on 12.10.2016.
  */
 public class Control {
-    public Control(String encoding) {
+    public Control(Encoding encoding) {
         this.encoding = encoding;
     }
 
-    private String encoding;
+    private Encoding encoding;
 
-    public String getEncoding() {
+    public Encoding getEncoding() {
         return encoding;
     }
 
-    public void setEncoding(String encoding) {
+    public void setEncoding(Encoding encoding) {
         this.encoding = encoding;
     }
 }

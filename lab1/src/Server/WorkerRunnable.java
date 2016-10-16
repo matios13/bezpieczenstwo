@@ -5,16 +5,11 @@ import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Random;
-import Commons.Commons;
-import DTO.Step1;
-import DTO.Step2A;
-import DTO.Step2B;
+import Commons.Encoding;
+import DTO.*;
 import com.google.gson.Gson;
 
-import static Commons.Commons.calcualteSecret;
-import static Commons.Commons.readJson;
-import static Commons.Commons.writeJson;
-import static java.lang.StrictMath.pow;
+import static Commons.Commons.*;
 
 /**
 
@@ -26,6 +21,7 @@ public class WorkerRunnable implements Runnable{
     private BigInteger b;
     private BigInteger secret;
     private boolean running = true;
+    private Encoding encoding = Encoding.none;
 
     public WorkerRunnable(Socket clientSocket, String serverText) {
         this.clientSocket = clientSocket;
@@ -49,13 +45,29 @@ public class WorkerRunnable implements Runnable{
                 step2A=step2(input);
             }
             Gson gson = new Gson();
-
             writeJson(output,gson.toJson(step2B));
             secret=step2A.getA().modPow(b,step1.getP());
             System.out.println("Secret na serwerze " + secret);
             while(running){
                 String msg =readJson(input);
-                System.out.println(msg);
+                Message message =  gson.fromJson(msg, Message.class);
+                if(message==null||message.getMessage()==null){
+                    Control control = gson.fromJson(msg,Control.class);
+                    if(control!=null&&control.getEncoding()!=null){
+                        encoding = control.getEncoding();
+                        System.out.println("Zmiana kodowania : "+encoding);
+                    }else{
+                        System.out.println("Blad");
+                    }
+
+                }else{
+                    message.setMessage(decodeMsg(encoding,message.getMessage(),secret.intValue()));
+                    System.out.println("Przyszlo " +message);
+                    message.setMessage(encodeMsg(encoding,message.getMessage(),secret.intValue()));
+                    System.out.println("Po kodowaniu " +message);
+                    writeJson(output,gson.toJson(message));
+
+                }
             }
 
         } catch(SocketException exception) {

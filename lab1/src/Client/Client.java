@@ -2,8 +2,8 @@ package Client;
 
 import Commons.Encoding;
 import DTO.*;
+import DTO.Message;
 import com.google.gson.Gson;
-import com.sun.corba.se.spi.orbutil.fsm.Input;
 
 import javax.swing.*;
 
@@ -19,15 +19,13 @@ import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Random;
 
-import static java.lang.StrictMath.pow;
-
 public class Client {
    public static Integer p =23;
    public static Integer g = 5;
    public static BigInteger a;
     public static BigInteger A;
    private static BigInteger secret;
-    private static Encoding encoding;
+    private static Encoding encoding = Encoding.none;
    public static void main(String args[]) {
       try {
          Socket skt = new Socket("localhost", 9000);
@@ -40,7 +38,7 @@ public class Client {
          Step2B step2B = step2(output,input);
           secret=step2B.getB().modPow(a,BigInteger.valueOf(p));
           System.out.println("Secret u clienta: "+secret);
-         createGUI(output);
+         createGUI(output,input);
       }
       catch(Exception e) {
          System.out.print("Whoops! It didn't work!\n");
@@ -62,7 +60,7 @@ public class Client {
        return step2B;
    }
 
-   public static void createGUI(OutputStream output){
+   public static void createGUI(OutputStream output, InputStream input){
       //KONFIGURACJA
       JComboBox encodingComboBox = new JComboBox();
       Arrays.stream(Encoding.values()).forEach(encoding -> encodingComboBox.addItem(encoding));
@@ -78,7 +76,8 @@ public class Client {
       encodingComboBox.addActionListener(new ActionListener() {
          @Override
          public void actionPerformed(ActionEvent e) {
-            Control control = new Control(((Encoding)encodingComboBox.getSelectedItem()).toString());
+            Control control = new Control(((Encoding)encodingComboBox.getSelectedItem()));
+             encoding=control.getEncoding();
             writeJson(output,new Gson().toJson(control));
          }
       });
@@ -119,9 +118,8 @@ public class Client {
       save.addActionListener(new ActionListener() {
          @Override
          public void actionPerformed(ActionEvent e) {
-             Message message = new Message(msg.getText(),from.getText());
-             writeJson(output,new Gson().toJson(message));
-             msg.setText("");
+             Message message = new Message(encodeMsg(encoding,msg.getText(),secret.intValue()),from.getText());
+             msg.setText(writeAndReadMessage(message,input,output));
 
          }
       });
@@ -144,10 +142,21 @@ public class Client {
       f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
    }
 
-   private static String encodeMsg(Encoding encoding,String msg){
-       if(encoding.equals(Encoding.cezar)){
 
+   private static String writeAndReadMessage(Message message,InputStream input,OutputStream output){
+       writeJson(output,new Gson().toJson(message));
+       try{
+           String json = readJson(input);
+           Message receivedMessage = new Gson().fromJson(json,Message.class);
+           receivedMessage.setMessage(decodeMsg(encoding,receivedMessage.getMessage(),secret.intValue()));
+           if(receivedMessage.getMessage().isEmpty()) {
+               return "nic nie odebrano";
+           }
+            return receivedMessage.toString();
+       }catch (Exception e){
+           e.printStackTrace();
+           return "wystąpił błąd";
        }
-        return msg;
+
    }
 }

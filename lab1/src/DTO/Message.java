@@ -27,4 +27,14 @@ public class Message {
     public void setFrom(String from) {
         this.from = from;
     }
+
+    @Override
+    public String toString(){
+        StringBuilder result = new StringBuilder();
+        result.append("Message : \n");
+        result.append(message);
+        result.append("\n from : \n");
+        result.append(from);
+        return result.toString();
+    }
 }
