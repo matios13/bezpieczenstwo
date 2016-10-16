@@ -1,6 +1,7 @@
 package Server;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Random;
@@ -10,6 +11,7 @@ import DTO.Step2A;
 import DTO.Step2B;
 import com.google.gson.Gson;
 
+import static Commons.Commons.calcualteSecret;
 import static Commons.Commons.readJson;
 import static Commons.Commons.writeJson;
 import static java.lang.StrictMath.pow;
@@ -21,15 +23,15 @@ public class WorkerRunnable implements Runnable{
 
     protected Socket clientSocket = null;
     protected String serverText   = null;
-    private Integer b;
-    private Integer secret;
+    private BigInteger b;
+    private BigInteger secret;
     private boolean running = true;
 
     public WorkerRunnable(Socket clientSocket, String serverText) {
         this.clientSocket = clientSocket;
         this.serverText   = serverText;
         Random generator = new Random();
-        b=generator.nextInt(50);
+        b=BigInteger.valueOf(generator.nextInt(40));
     }
 
     public void run() {
@@ -41,7 +43,7 @@ public class WorkerRunnable implements Runnable{
             while(step1==null){
                 step1=step1(input);
             }
-            Step2B step2B= new Step2B(((int)pow(step1.getG(),b))%step1.getP());
+            Step2B step2B= new Step2B(step1.getG().modPow(b,step1.getP()));
 
             while (step2A==null){
                 step2A=step2(input);
@@ -49,7 +51,8 @@ public class WorkerRunnable implements Runnable{
             Gson gson = new Gson();
 
             writeJson(output,gson.toJson(step2B));
-
+            secret=step2A.getA().modPow(b,step1.getP());
+            System.out.println("Secret na serwerze " + secret);
             while(running){
                 String msg =readJson(input);
                 System.out.println(msg);

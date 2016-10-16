@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
+import static java.lang.StrictMath.pow;
+
 /**
  * Created by Uzytkownik on 12.10.2016.
  */
@@ -36,12 +38,10 @@ public class Commons {
             e.printStackTrace();
         }
         String received = decodeListOfBytes(bytes.toArray());
-        System.out.println("Received : "+received);
         return received;
     }
     public static boolean writeJson(OutputStream output, String msg){
         byte[] message = Base64.getEncoder().encode(msg.getBytes());
-        System.out.println("Send : "+msg+" base64 "+new String(message));
         try {
             output.write(message);
             output.flush();
@@ -57,5 +57,8 @@ public class Commons {
             list[i]=(Byte)bytes[i];
         }
         return new String(Base64.getDecoder().decode(list));
+    }
+    public static int calcualteSecret(int A, int b , int p){
+        return (int)(pow(A,b)%p);
     }
 }

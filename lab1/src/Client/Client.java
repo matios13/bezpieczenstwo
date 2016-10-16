@@ -1,10 +1,7 @@
 package Client;
 
 import Commons.Encoding;
-import DTO.Control;
-import DTO.Message;
-import DTO.Step1;
-import DTO.Step2A;
+import DTO.*;
 import com.google.gson.Gson;
 import com.sun.corba.se.spi.orbutil.fsm.Input;
 
@@ -16,6 +13,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
@@ -26,9 +24,9 @@ import static java.lang.StrictMath.pow;
 public class Client {
    public static Integer p =23;
    public static Integer g = 5;
-   public static Integer a;
-   private static Integer A;
-   private static Integer B;
+   public static BigInteger a;
+    public static BigInteger A;
+   private static BigInteger secret;
     private static Encoding encoding;
    public static void main(String args[]) {
       try {
@@ -37,9 +35,11 @@ public class Client {
          InputStream input = skt.getInputStream();
          OutputStream output = skt.getOutputStream();
          Random generator = new Random();
-         a=generator.nextInt(40);
+         a=BigInteger.valueOf(generator.nextInt(40));
          step1(output);
-         step2(output,input);
+         Step2B step2B = step2(output,input);
+          secret=step2B.getB().modPow(a,BigInteger.valueOf(p));
+          System.out.println("Secret u clienta: "+secret);
          createGUI(output);
       }
       catch(Exception e) {
@@ -47,16 +47,19 @@ public class Client {
       }
    }
    public static void step1(OutputStream output){
-      Step1 step1 = new Step1(p,g);
+      Step1 step1 = new Step1(BigInteger.valueOf(p),BigInteger.valueOf(g));
       Gson gson = new Gson();
       writeJson(output,gson.toJson(step1));
    }
-   public static void step2(OutputStream output, InputStream input)throws SocketException{
-      Step2A step2A=new Step2A(((int)pow(p,a))%g);
+   public static Step2B step2(OutputStream output, InputStream input)throws SocketException{
+      Step2A step2A=new Step2A(BigInteger.valueOf(g).modPow(a,BigInteger.valueOf(p)));
+       A=step2A.getA();
       Gson gson = new Gson();
       writeJson(output,gson.toJson(step2A));
       String msg = readJson(input);
+       Step2B step2B = gson.fromJson(msg, Step2B.class);
       System.out.println("Received : "+msg);
+       return step2B;
    }
 
    public static void createGUI(OutputStream output){

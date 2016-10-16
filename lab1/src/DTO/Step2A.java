@@ -1,20 +1,22 @@
 package DTO;
 
+import java.math.BigInteger;
+
 /**
  * Created by Uzytkownik on 12.10.2016.
  */
 public class Step2A {
-    public Step2A(Integer a) {
+    public Step2A(BigInteger a) {
         this.a = a;
     }
 
-    private Integer a;
+    private BigInteger a;
 
-    public Integer getA() {
+    public BigInteger getA() {
         return a;
     }
 
-    public void setA(Integer a) {
+    public void setA(BigInteger a) {
         this.a = a;
     }
 }
