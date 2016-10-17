@@ -6,9 +6,11 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import static Commons.Commons.PORT;
+
 public class Server {
 	public static void main(String [] args){
-		ServerThread server = new ServerThread(9000);
+		ServerThread server = new ServerThread(PORT);
 		new Thread(server).start();
 		while(!server.isStopped){
 		}

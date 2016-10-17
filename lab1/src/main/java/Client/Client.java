@@ -4,12 +4,13 @@ import Commons.Encoding;
 import DTO.*;
 import DTO.Message;
 import com.google.gson.Gson;
-import org.apache.commons.math3.primes.Primes;
 
 import javax.crypto.spec.DHParameterSpec;
 import javax.swing.*;
 
 import static Commons.Commons.*;
+import static Commons.Encode.decodeMsg;
+import static Commons.Encode.encodeMsg;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,8 +19,6 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketException;
-import java.security.AlgorithmParameterGenerator;
-import java.security.AlgorithmParameters;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -32,28 +31,12 @@ public class Client {
     private static Encoding encoding = Encoding.none;
    public static void main(String args[]) {
       try {
-          if(args.length==2){
-              p=new BigInteger(args[0]);
-              g=new BigInteger(args[1]);
-          }else{
-
-              AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");
-              paramGen.init(1024);
-              AlgorithmParameters params = paramGen.generateParameters();
-              DHParameterSpec dhSpec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class);
-              p=dhSpec.getP();
-              g=dhSpec.getG();
-
-          }
-         Socket skt = new Socket("localhost", PORT);
-
-
-
+         Socket skt = new Socket(HOST, PORT);
          InputStream input = skt.getInputStream();
          OutputStream output = skt.getOutputStream();
          Random generator = new Random();
          a=BigInteger.valueOf(generator.nextInt(40));
-         step1(output);
+         step0(output,input);
          Step2B step2B = step2(output,input);
           secret=step2B.getB().modPow(a,p);
           System.out.println("Secret u clienta: "+secret);
@@ -63,11 +46,21 @@ public class Client {
          System.out.print("Whoops! It didn't work!\n");
       }
    }
-   public static void step1(OutputStream output){
-      Step1 step1 = new Step1(p,g);
-      Gson gson = new Gson();
-      writeJson(output,gson.toJson(step1));
+
+   public static void step0(OutputStream outputStream,InputStream inputStream){
+       Step0 step0 = new Step0();
+       step0.setRequest("keys");
+       try {
+           Step1 step1 =  new Gson().fromJson(readJsonAndSendOne(inputStream,outputStream,
+                   new Gson().toJson(step0)),Step1.class);
+           p=step1.getP();
+           g=step1.getG();
+           System.out.println("DOSTALEM P "+p+" G : " +g);
+       } catch (SocketException e) {
+           e.printStackTrace();
+       }
    }
+
    public static Step2B step2(OutputStream output, InputStream input)throws SocketException{
       Step2A step2A=new Step2A(g.modPow(a,p));
        A=step2A.getA();

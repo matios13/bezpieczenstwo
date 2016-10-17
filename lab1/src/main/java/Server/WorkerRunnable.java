@@ -4,12 +4,19 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketException;
+import java.security.AlgorithmParameterGenerator;
+import java.security.AlgorithmParameters;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import Commons.Encoding;
 import DTO.*;
 import com.google.gson.Gson;
 
+import javax.crypto.spec.DHParameterSpec;
+
 import static Commons.Commons.*;
+import static Commons.Encode.decodeMsg;
+import static Commons.Encode.encodeMsg;
 
 /**
 
@@ -18,27 +25,40 @@ public class WorkerRunnable implements Runnable{
 
     protected Socket clientSocket = null;
     protected String serverText   = null;
+    private Step1 step1;
     private BigInteger b;
     private BigInteger secret;
     private boolean running = true;
     private Encoding encoding = Encoding.none;
 
-    public WorkerRunnable(Socket clientSocket, String serverText) {
-        this.clientSocket = clientSocket;
-        this.serverText   = serverText;
-        Random generator = new Random();
-        b=BigInteger.valueOf(generator.nextInt(40));
+    public WorkerRunnable(Socket clientSocket, String serverText)  {
+        try {
+            System.out.println("Polaczono");
+            this.clientSocket = clientSocket;
+            this.serverText = serverText;
+            Random generator = new Random();
+            b = BigInteger.valueOf(generator.nextInt(40));
+            AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");
+            paramGen.init(1024);
+            AlgorithmParameters params = paramGen.generateParameters();
+            DHParameterSpec dhSpec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class);
+            step1 = new Step1(dhSpec.getP(), dhSpec.getG());
+        }catch (Exception e){
+
+        }
     }
 
     public void run() {
         try {
             InputStream input  = clientSocket.getInputStream();
             OutputStream output = clientSocket.getOutputStream();
-            Step1 step1=null;
+
             Step2A step2A =null;
-            while(step1==null){
-                step1=step1(input);
+            while(true){
+                if((new Gson().fromJson(readJsonAndSendOne(input,null,null),Step0.class)).getRequest().equals("keys"))
+                    break;
             }
+            step1(output,step1);
             Step2B step2B= new Step2B(step1.getG().modPow(b,step1.getP()));
 
             Gson gson = new Gson();
@@ -102,6 +122,11 @@ public class WorkerRunnable implements Runnable{
 
         return null;
 
+    }
+
+    public void step1(OutputStream output, Step1 step1){
+        Gson gson = new Gson();
+        writeJson(output,gson.toJson(step1));
     }
 
 
