@@ -28,7 +28,7 @@ public class Client {
     private static Encoding encoding = Encoding.none;
    public static void main(String args[]) {
       try {
-         Socket skt = new Socket("localhost", 9000);
+         Socket skt = new Socket("localhost", PORT);
 
          InputStream input = skt.getInputStream();
          OutputStream output = skt.getOutputStream();
@@ -53,8 +53,7 @@ public class Client {
       Step2A step2A=new Step2A(BigInteger.valueOf(g).modPow(a,BigInteger.valueOf(p)));
        A=step2A.getA();
       Gson gson = new Gson();
-      writeJson(output,gson.toJson(step2A));
-      String msg = readJson(input);
+      String msg = readJsonAndSendOne(input,output,gson.toJson(step2A));
        Step2B step2B = gson.fromJson(msg, Step2B.class);
       System.out.println("Received : "+msg);
        return step2B;
@@ -140,13 +139,14 @@ public class Client {
       f.pack();
       f.setVisible(true);
       f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+
    }
 
 
    private static String writeAndReadMessage(Message message,InputStream input,OutputStream output){
-       writeJson(output,new Gson().toJson(message));
        try{
-           String json = readJson(input);
+           String json = readJsonAndSendOne(input,output,new Gson().toJson(message));
            Message receivedMessage = new Gson().fromJson(json,Message.class);
            receivedMessage.setMessage(decodeMsg(encoding,receivedMessage.getMessage(),secret.intValue()));
            if(receivedMessage.getMessage().isEmpty()) {

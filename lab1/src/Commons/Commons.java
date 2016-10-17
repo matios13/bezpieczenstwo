@@ -16,7 +16,7 @@ public class Commons {
 
     public static int PORT = 9000;
 
-    public static String readJson(InputStream input) throws SocketException {
+    public static String readJsonAndSendOne(InputStream input, OutputStream output, String sendMsg) throws SocketException {
         List<Byte> bytes = new ArrayList<>();
         BufferedReader br= new BufferedReader(new InputStreamReader(input));
         String msg;
@@ -24,6 +24,10 @@ public class Commons {
         try {
             boolean received = false;
             while(!(received&&input.available()==0)){
+                if(sendMsg!=null){
+                    writeJson(output,sendMsg);
+                    sendMsg=null;
+                }
                 int oneByte = input.read();
                 if(oneByte>0){
                     received=true;
@@ -41,7 +45,7 @@ public class Commons {
         return received;
     }
     public static boolean writeJson(OutputStream output, String msg){
-        byte[] message = Base64.getEncoder().encode(msg.getBytes());
+        byte[] message = msg.getBytes();
         try {
             output.write(message);
             output.flush();
@@ -56,7 +60,7 @@ public class Commons {
         for (int i = 0; i < bytes.length; i++) {
             list[i]=(Byte)bytes[i];
         }
-        return new String(Base64.getDecoder().decode(list));
+        return new String(list);
     }
     public static int calcualteSecret(int A, int b , int p){
         return (int)(pow(A,b)%p);

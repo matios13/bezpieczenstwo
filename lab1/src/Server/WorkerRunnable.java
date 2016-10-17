@@ -41,15 +41,15 @@ public class WorkerRunnable implements Runnable{
             }
             Step2B step2B= new Step2B(step1.getG().modPow(b,step1.getP()));
 
-            while (step2A==null){
-                step2A=step2(input);
-            }
             Gson gson = new Gson();
-            writeJson(output,gson.toJson(step2B));
+            while (step2A==null){
+                step2A=step2(input,output,gson.toJson(step2B));
+            }
+
             secret=step2A.getA().modPow(b,step1.getP());
             System.out.println("Secret na serwerze " + secret);
             while(running){
-                String msg =readJson(input);
+                String msg = readJsonAndSendOne(input,null,null);
                 Message message =  gson.fromJson(msg, Message.class);
                 if(message==null||message.getMessage()==null){
                     Control control = gson.fromJson(msg,Control.class);
@@ -78,7 +78,7 @@ public class WorkerRunnable implements Runnable{
     }
 
     public Step1 step1(InputStream input) throws IOException {
-        String json = readJson(input);
+        String json = readJsonAndSendOne(input,null,null);
         if(json.isEmpty())
             return null;
         System.out.println("Received : "+json.toString());
@@ -90,8 +90,8 @@ public class WorkerRunnable implements Runnable{
         return null;
 
     }
-    public Step2A step2(InputStream input) throws SocketException{
-        String json = readJson(input);
+    public Step2A step2(InputStream input, OutputStream outputStream,String msg) throws SocketException{
+        String json = readJsonAndSendOne(input,outputStream,msg);
         if(json.isEmpty())
             return null;
         System.out.println("Received : "+json.toString());
