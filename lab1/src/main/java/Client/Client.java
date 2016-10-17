@@ -24,8 +24,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Client {
-   public static Integer p =23;
-   public static Integer g = 5;
+   public static BigInteger p ;
+   public static BigInteger g ;
    public static BigInteger a;
     public static BigInteger A;
    private static BigInteger secret;
@@ -33,14 +33,21 @@ public class Client {
    public static void main(String args[]) {
       try {
           if(args.length==2){
-              p=new Integer(args[0]);
-              g=new Integer(args[1]);
+              p=new BigInteger(args[0]);
+              g=new BigInteger(args[1]);
           }else{
+
+              AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");
+              paramGen.init(1024);
+              AlgorithmParameters params = paramGen.generateParameters();
+              DHParameterSpec dhSpec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class);
+              p=dhSpec.getP();
+              g=dhSpec.getG();
 
           }
          Socket skt = new Socket("localhost", PORT);
 
-         
+
 
          InputStream input = skt.getInputStream();
          OutputStream output = skt.getOutputStream();
@@ -48,7 +55,7 @@ public class Client {
          a=BigInteger.valueOf(generator.nextInt(40));
          step1(output);
          Step2B step2B = step2(output,input);
-          secret=step2B.getB().modPow(a,BigInteger.valueOf(p));
+          secret=step2B.getB().modPow(a,p);
           System.out.println("Secret u clienta: "+secret);
          createGUI(output,input);
       }
@@ -57,12 +64,12 @@ public class Client {
       }
    }
    public static void step1(OutputStream output){
-      Step1 step1 = new Step1(BigInteger.valueOf(p),BigInteger.valueOf(g));
+      Step1 step1 = new Step1(p,g);
       Gson gson = new Gson();
       writeJson(output,gson.toJson(step1));
    }
    public static Step2B step2(OutputStream output, InputStream input)throws SocketException{
-      Step2A step2A=new Step2A(BigInteger.valueOf(g).modPow(a,BigInteger.valueOf(p)));
+      Step2A step2A=new Step2A(g.modPow(a,p));
        A=step2A.getA();
       Gson gson = new Gson();
       String msg = readJsonAndSendOne(input,output,gson.toJson(step2A));

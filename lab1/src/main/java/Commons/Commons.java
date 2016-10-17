@@ -111,8 +111,9 @@ public class Commons {
     private static byte[] xorWithKey(byte[] a, byte[] key) {
         byte[] out = new byte[a.length];
         for (int i = 0; i < a.length; i++) {
-            out[i] = (byte) (a[i] ^ key[i%key.length]);
+            out[i] = (byte) (a[i] ^ key[key.length-1]);
         }
+        System.out.println("xor "+ new String(out));
         return out;
     }
 
