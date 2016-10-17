@@ -4,6 +4,7 @@ import Commons.Encoding;
 import DTO.*;
 import DTO.Message;
 import com.google.gson.Gson;
+import org.apache.commons.math3.primes.Primes;
 
 import javax.swing.*;
 
@@ -16,6 +17,7 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketException;
+import java.security.AlgorithmParameterGenerator;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -29,7 +31,7 @@ public class Client {
    public static void main(String args[]) {
       try {
          Socket skt = new Socket("localhost", PORT);
-
+        
          InputStream input = skt.getInputStream();
          OutputStream output = skt.getOutputStream();
          Random generator = new Random();
