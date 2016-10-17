@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.security.AlgorithmParameterGenerator;
 import java.security.AlgorithmParameters;
-import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import Commons.Encoding;
 import DTO.*;
@@ -70,8 +69,9 @@ public class WorkerRunnable implements Runnable{
             System.out.println("Secret na serwerze " + secret);
             while(running){
                 String msg = readJsonAndSendOne(input,null,null);
+                System.out.println("Dosttalem : " +msg);
                 Message message =  gson.fromJson(msg, Message.class);
-                if(message==null||message.getMessage()==null){
+                if(message==null||message.getMsg()==null){
                     Control control = gson.fromJson(msg,Control.class);
                     if(control!=null&&control.getEncoding()!=null){
                         encoding = control.getEncoding();
@@ -81,9 +81,9 @@ public class WorkerRunnable implements Runnable{
                     }
 
                 }else{
-                    message.setMessage(decodeMsg(encoding,message.getMessage(),secret.intValue()));
+                    message.setMsg(decodeMsg(encoding,message.getMsg(),secret.intValue()));
                     System.out.println("Przyszlo " +message);
-                    message.setMessage(encodeMsg(encoding,message.getMessage(),secret.intValue()));
+                    message.setMsg(encodeMsg(encoding,message.getMsg(),secret.intValue()));
                     System.out.println("Po kodowaniu " +message);
                     writeJson(output,gson.toJson(message));
 

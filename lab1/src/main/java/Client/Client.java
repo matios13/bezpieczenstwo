@@ -5,7 +5,6 @@ import DTO.*;
 import DTO.Message;
 import com.google.gson.Gson;
 
-import javax.crypto.spec.DHParameterSpec;
 import javax.swing.*;
 
 import static Commons.Commons.*;
@@ -160,8 +159,8 @@ public class Client {
        try{
            String json = readJsonAndSendOne(input,output,new Gson().toJson(message));
            Message receivedMessage = new Gson().fromJson(json,Message.class);
-           receivedMessage.setMessage(decodeMsg(encoding,receivedMessage.getMessage(),secret.intValue()));
-           if(receivedMessage.getMessage().isEmpty()) {
+           receivedMessage.setMsg(decodeMsg(encoding,receivedMessage.getMsg(),secret.intValue()));
+           if(receivedMessage.getMsg().isEmpty()) {
                return "nic nie odebrano";
            }
             return receivedMessage.toString();

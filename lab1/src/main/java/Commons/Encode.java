@@ -10,7 +10,7 @@ public class Encode {
     public static String encodeMsg(Encoding encoding,String msg,Integer secret){
         msg = msg.toLowerCase();
         if(encoding.equals(Encoding.cezar)){
-            msg=cipher(msg,secret%27);
+            msg=cipher(msg,secret%26);
         }else if(encoding.equals(Encoding.xor)){
             msg=new String(xorWithKey(msg.getBytes(),intToByteArray(secret)));
         }
@@ -20,7 +20,7 @@ public class Encode {
     public static String decodeMsg(Encoding encoding,String msg,Integer secret){
         msg = new String(Base64.getDecoder().decode(msg.getBytes()));
         if(encoding.equals(Encoding.cezar)){
-            msg=cipher(msg,-(secret%27));
+            msg=cipher(msg,-(secret%26));
         }else if(encoding.equals(Encoding.xor)){
             msg=new String(xorWithKey(msg.getBytes(),intToByteArray(secret)));
         }

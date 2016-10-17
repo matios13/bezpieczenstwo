@@ -14,8 +14,8 @@ import static java.lang.StrictMath.pow;
  */
 public class Commons {
 
-    public static int PORT = 10586;
-    public static String HOST = "localhost";
+    public static int PORT = 10748;
+    public static String HOST = "192.168.43.213";
 
     public static String readJsonAndSendOne(InputStream input, OutputStream output, String sendMsg) throws SocketException {
         List<Byte> bytes = new ArrayList<>();
