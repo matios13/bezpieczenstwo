@@ -4,7 +4,12 @@ package DTO;
  * Created by matio on 17.10.2016.
  */
 public class Step0 {
-     private String request ;
+
+    public Step0(String request) {
+        this.request = request;
+    }
+
+    private String request ;
 
     public String getRequest() {
         return request;
