@@ -4,9 +4,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.IOException;
 
+/*
+Serwer akceptuje połączenia i uruchamia wątek dla każdego socketa
+
+ */
 public class ServerThread implements Runnable {
 
-	protected int serverPort = 8080;
+	protected int serverPort;
 	protected ServerSocket serverSocket = null;
 	protected boolean isStopped = false;
 	protected Thread runningThread = null;
@@ -21,19 +25,16 @@ public class ServerThread implements Runnable {
 		}
 		openServerSocket();
 		while (!isStopped()) {
-			Socket clientSocket = null;
 			try {
-				clientSocket = this.serverSocket.accept();
+				Socket clientSocket = this.serverSocket.accept();
+				new Thread(new WorkerRunnable(clientSocket, "Multithreaded Server")).start();
 			} catch (IOException e) {
 				if (isStopped()) {
 					System.out.println("Server Stopped.");
 					return;
 				}
-				throw new RuntimeException("Error accepting client connection",
-						e);
+				throw new RuntimeException("Error accepting client connection", e);
 			}
-			new Thread(new WorkerRunnable(clientSocket, "Multithreaded Server"))
-					.start();
 		}
 		System.out.println("Server Stopped.");
 	}
@@ -53,7 +54,7 @@ public class ServerThread implements Runnable {
 		try {
 			this.serverSocket = new ServerSocket(this.serverPort);
 		} catch (IOException e) {
-			throw new RuntimeException("Cannot open port 8080", e);
+			throw new RuntimeException("Cannot open port"+serverPort, e);
 		}
 	}
 
