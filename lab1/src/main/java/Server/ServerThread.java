@@ -20,6 +20,7 @@ public class ServerThread implements Runnable {
 	}
 
 	public void run() {
+		System.out.println("Server Starting");
 		synchronized (this) {
 			this.runningThread = Thread.currentThread();
 		}

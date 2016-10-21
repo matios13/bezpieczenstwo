@@ -39,14 +39,17 @@ public class Client {
          Socket skt = new Socket(HOST, PORT);
          InputStream input = skt.getInputStream();
          OutputStream output = skt.getOutputStream();
+          System.out.println("Connected");
           generateMyAValue();
-         sendRequestForKeys(output,input);
+          System.out.println("Generated A");
+         sendRequestForKeys(output,input);;
          Step2B step2B = sendMyAValueAndWaitForB(output,input);
           calculateSecret(step2B);
          createGUI(output,input);
       }
       catch(Exception e) {
          System.out.print("Whoops! It didn't work!\n");
+          e.printStackTrace();
       }
    }
 
@@ -63,8 +66,9 @@ public class Client {
     public static void sendRequestForKeys(OutputStream outputStream, InputStream inputStream){
        Step0 step0 = new Step0("keys");
        try {
-           Step1 step1 =  new Gson().fromJson(readJsonAndSendOne(inputStream,outputStream,
-                   new Gson().toJson(step0)),Step1.class);
+           String receivedJson=readJsonAndSendOne(inputStream,outputStream, new Gson().toJson(step0));
+           System.out.println(receivedJson);
+           Step1 step1 =  new Gson().fromJson(receivedJson,Step1.class);
            p=step1.getP();
            g=step1.getG();
            System.out.println("DOSTALEM P "+p+" G : " +g);

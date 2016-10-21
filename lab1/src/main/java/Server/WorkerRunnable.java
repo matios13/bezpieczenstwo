@@ -96,10 +96,13 @@ public class WorkerRunnable implements Runnable{
 
     }
     public void waitForKeys(InputStream input){
+        System.out.println("Start Odczytu");
         while(true){
             try {
-                if((gson.fromJson(readJsonAndSendOne(input,null,null),Step0.class)).getRequest().equals("keys"))
+                if((gson.fromJson(readJsonAndSendOne(input,null,null),Step0.class)).getRequest().equals("keys")) {
+                    System.out.println("Poproszono o klucze");
                     break;
+                }
             } catch (SocketException e) {
                 e.printStackTrace();
             }
@@ -139,9 +142,9 @@ public class WorkerRunnable implements Runnable{
 
     private void handleMessage(OutputStream output, Message message) {
         message.setMsg(decodeMsg(encoding,message.getMsg(),secret.intValue()));
-        System.out.println("Przyszlo " +message);
+        System.out.println("Przyszlo " +message+"\n----------------------------------");
         message.setMsg(encodeMsg(encoding,message.getMsg(),secret.intValue()));
-        System.out.println("Po kodowaniu " +message);
+        System.out.println("Po kodowaniu " +message+"\n----------------------------------");
         writeJson(output,gson.toJson(message));
     }
 

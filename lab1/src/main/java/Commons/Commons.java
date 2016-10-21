@@ -17,7 +17,7 @@ import static java.lang.StrictMath.pow;
 public class Commons {
 
     public static int PORT = 10748;
-    public static String HOST = "192.168.43.213";
+    public static String HOST = "localhost";
 
     /**
      *
@@ -46,6 +46,8 @@ public class Commons {
                 }else {
                     break;
                 }
+                if(oneByte==125)
+                    break;
             }
         } catch(SocketException e) {
             throw new SocketException();
@@ -53,6 +55,7 @@ public class Commons {
             e.printStackTrace();
         }
         String received = decodeListOfBytes(bytes.toArray());
+        System.out.println("Received : "+received);
         return received;
     }
 
@@ -63,7 +66,7 @@ public class Commons {
      * @return false jesli sie nie udalo
      */
     public static boolean writeJson(OutputStream output, String msg){
-        msg=msg+"\r\n";
+        System.out.println("Sending" +msg);
         byte[] message = msg.getBytes();
         try {
             output.write(message);
