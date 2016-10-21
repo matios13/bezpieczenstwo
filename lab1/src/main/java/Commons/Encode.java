@@ -4,9 +4,17 @@ import java.util.Base64;
 
 /**
  * Created by matio on 17.10.2016.
+ * Kodowanie i dekodowanie
  */
 public class Encode {
 
+    /**
+     *
+     * @param encoding Enum z metoda kodowania
+     * @param msg  Wiadomosc do zakodowania
+     * @param secret Sekret
+     * @return
+     */
     public static String encodeMsg(Encoding encoding,String msg,Integer secret){
         msg = msg.toLowerCase();
         if(encoding.equals(Encoding.cezar)){
@@ -17,6 +25,13 @@ public class Encode {
         return new String(Base64.getEncoder().encode(msg.getBytes()));
     }
 
+    /**
+     *
+     * @param  Enum z metoda dekodowania
+     * @param msg  Wiadomosc do zakodowania
+     * @param secret
+     * @return
+     */
     public static String decodeMsg(Encoding encoding,String msg,Integer secret){
         msg = new String(Base64.getDecoder().decode(msg.getBytes()));
         if(encoding.equals(Encoding.cezar)){
