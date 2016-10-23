@@ -92,8 +92,8 @@ public class Client {
 
    private static String writeAndReadMessage(Message message,InputStream input,OutputStream output){
        try{
-           String json = readJsonAndSendOne(input,output,new Gson().toJson(message));
-           Message receivedMessage = new Gson().fromJson(json,Message.class);
+           String json = readJsonAndSendOne(input,output,gson.toJson(message));
+           Message receivedMessage = gson.fromJson(json,Message.class);
            receivedMessage.setMsg(decodeMsg(encoding,receivedMessage.getMsg(),secret.intValue()));
            if(receivedMessage.getMsg().isEmpty()) {
                return "nic nie odebrano";
