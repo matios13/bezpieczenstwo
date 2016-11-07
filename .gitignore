@@ -51,3 +51,5 @@ local.properties
 .idea/
 lab1/target/
 lab1/lab1.iml
+*.iml
+*.class
