@@ -48,3 +48,6 @@ local.properties
 
 # Code Recommenders
 .recommenders/
+.idea/
+lab1/target/
+lab1/lab1.iml
