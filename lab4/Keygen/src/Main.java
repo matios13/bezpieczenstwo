@@ -11,12 +11,20 @@ public class Main {
         System.out.println("P.S nie jest to metoda bruta forsa :P ");
         Scanner scanner = new Scanner(System.in);
         System.out.print("Podaj nr indeksu:\n");
-        String indeks = scanner.nextLine();
-        System.out.println(generateFirstPart(atoi(indeks)));
+        String indeksString = scanner.nextLine();
+        int indeks = atoi(indeksString);
+        String password =generateFirstPart(indeks);
+        password += generateSecondPart(indeks);
+        System.out.println(password);
     }
     private static String generateFirstPart(int index){
         StringBuilder firstPart = new StringBuilder();
         Stream.iterate(0,n->n+1).limit(26).forEach(n-> firstPart.append((char)((n*7+index)%26+97)));
+        return firstPart.toString();
+    }
+    private static String generateSecondPart(int index){
+        StringBuilder firstPart = new StringBuilder();
+        Stream.iterate(0,n->n+1).limit(26).forEach(n-> firstPart.append((char)((n*9+index)%26+97)));
         return firstPart.toString();
     }
     private static int atoi(String co){
