@@ -7,24 +7,19 @@ import java.util.stream.Stream;
  */
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Lamacz hasel 1.0");
-        System.out.println("P.S nie jest to metoda bruta forsa :P ");
+        System.out.println("Lamacz hasel 1.0 \n"
+                +"P.S nie jest to metoda bruta forsa :P \n"
+                +"Podaj nr indeksu:\n");
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Podaj nr indeksu:\n");
         String indeksString = scanner.nextLine();
         int indeks = atoi(indeksString);
-        String password =generateFirstPart(indeks);
-        password += generateSecondPart(indeks);
+        String password =generateOnePart(indeks,7);
+        password += generateOnePart(indeks,9);
         System.out.println(password);
     }
-    private static String generateFirstPart(int index){
+    private static String generateOnePart(int index,int multiplier){
         StringBuilder firstPart = new StringBuilder();
-        Stream.iterate(0,n->n+1).limit(26).forEach(n-> firstPart.append((char)((n*7+index)%26+97)));
-        return firstPart.toString();
-    }
-    private static String generateSecondPart(int index){
-        StringBuilder firstPart = new StringBuilder();
-        Stream.iterate(0,n->n+1).limit(26).forEach(n-> firstPart.append((char)((n*9+index)%26+97)));
+        Stream.iterate(0,n->n+1).limit(26).forEach(n-> firstPart.append((char)((n*multiplier+index)%26+97)));
         return firstPart.toString();
     }
     private static int atoi(String co){
