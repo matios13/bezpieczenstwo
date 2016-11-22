@@ -1,5 +1,6 @@
 import java.util.Random;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 /**
  * Created by matio_000 on 22.11.2016.
@@ -11,7 +12,12 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Podaj nr indeksu:\n");
         String indeks = scanner.nextLine();
-        System.out.println(atoi(indeks));
+        System.out.println(generateFirstPart(atoi(indeks)));
+    }
+    private static String generateFirstPart(int index){
+        StringBuilder firstPart = new StringBuilder();
+        Stream.iterate(0,n->n+1).limit(26).forEach(n-> firstPart.append((char)((n*7+index)%26+97)));
+        return firstPart.toString();
     }
     private static int atoi(String co){
         try{
