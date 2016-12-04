@@ -13,11 +13,18 @@ import java.io.RandomAccessFile;
 public class Script {
 
     public static void main(String[] args) {
-        String fileName = "/patch_me_bin_orig";
-        String addresStrng = "0x80483f0";
+        if (args.length < 2) {
+            System.err.println(" Nie dostałem pliku \n jesli chcesz uzyc skryptu dla konkretnego pliku wpisz :\n java PathMeSolver <file> startAddress replaceBytes...");
+           // System.exit(0);
+        }
+        String fileName = args[0];
+        String addresStrng = args[1];
         long address = Long.decode(addresStrng);
         try {
-            ElfFile elfFile = ElfFile.fromFile(new File(Script.class.getResource("").getPath() + "/patch_me_bin_orig"));
+            RandomAccessFile randomAccessFile = new RandomAccessFile(fileName,"r");
+            System.out.println(randomAccessFile.toString());
+            File file = new File(fileName);
+            ElfFile elfFile = ElfFile.fromFile(file);
             long closest = 0;
             String closestName = "";
             long offset = 0;
