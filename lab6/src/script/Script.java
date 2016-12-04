@@ -1,10 +1,8 @@
 package script;
 
-import com.sun.deploy.util.ArrayUtil;
 import net.fornwall.jelf.ElfFile;
 import net.fornwall.jelf.ElfSectionHeader;
 
-import javax.sound.midi.SysexMessage;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -19,7 +17,7 @@ public class Script {
     static List<Byte> bytesInLittleEndian;
     public static void main(String[] args) {
         if (args.length < 2) {
-            System.err.println(" Nie dostałem pliku \n jesli chcesz uzyc skryptu dla konkretnego pliku wpisz :\n java PathMeSolver <file> startAddress replaceBytes...");
+            System.err.println(" Nie dostałem pliku \n jesli chcesz uzyc skryptu dla konkretnego pliku wpisz :\n java PathMeSolver file startAddress replaceBytes...");
             System.exit(0);
         }
         String fileName = args[0];
